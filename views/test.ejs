@@ -1,0 +1,20 @@
+<% include ./partials/header %>
+
+<% cats.forEach(function(cat) { %>
+
+  <p>===================================================</p>
+  
+  <p>Cat Name: <%= cat.name %></p>
+  <p>Cat Desc: <%= cat.description %></p>
+  <p>Cat Author: <%= cat.author.username %></p>
+  <% cat.comments.forEach(function(comment) { %>
+    <p>Comment ID: <%= comment._id %></p>
+    <p>Comment Text: <%= comment.text %></p>
+    <p>Comment Author: <%= comment.author.username %></p>
+  <% }); %>
+
+  <p>===================================================</p>
+
+<% }); %>
+
+<% include ./partials/footer %>
