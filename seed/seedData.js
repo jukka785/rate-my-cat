@@ -18,27 +18,21 @@ for (var i = 0; i < numUsers; i++) {
   });
 }
 
+// generate random comments
+for (var i = 0; i < numComments; i++) {
+  data.comments.push({
+    text: faker.lorem.paragraph()
+  });
+}
+
 // generate random cats
 for (var i = 0; i < numCats; i++) {
   data.cats.push({
     name: faker.name.firstName(),
+    age: faker.random.number({ min: 1, max: 20}),
     image: faker.image.imageUrl(),
-    description: faker.lorem.paragraph(),
-    author: randomEntry(data.users).username
+    description: faker.lorem.paragraph()
   });
-}
-
-// generate random comments
-for (var i = 0; i < numComments; i++) {
-  data.comments.push({
-    text: faker.lorem.paragraph(),
-    author: randomEntry(data.users).username,
-    cat: randomEntry(data.cats).name
-  });
-}
-
-function randomEntry(array) {
-  return array[~~(Math.random() * array.length)];
 }
 
 module.exports = data;

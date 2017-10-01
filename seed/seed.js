@@ -6,6 +6,10 @@ var Comment = require("../models/comment");
 var seedData = require("./seedData");
 require("dotenv").load();
 
+var users = [];
+var comments = [];
+var cats = [];
+
 // assign mongoose promise library and connect to database
 mongoose.Promise = global.Promise;
 const databaseUri = process.env.MONGODB_URI;
@@ -16,158 +20,119 @@ mongoose.connect(databaseUri, { useMongoClient: true })
   })
   .catch(err => console.log("Database connection error: " + err.message));
 
-var catComments = [];
+function randomEntry(array) {
+  return array[~~(Math.random() * array.length)];
+}
 
-// seeding users
-function seedUsers(callback) {
-  User.remove({}, function(err) {
+function randomBetween(min, max) {
+  return ~~(Math.random() * (max-min)) + min;
+}
+
+function removeCollection(callback, Collection) {
+  Collection.remove({}, function(err) {
+    console.log("collection removed");
+    callback(null, "SUCCESS - collection removed");
+  });
+}
+
+function createUser(user, userSavedCallBack) {
+  User.create(user, function(err, createdUser) {
     if (err) {
-      console.dir(err);
+      console.log(err);
+    } else {
+      console.log("user created");
+      users.push(createdUser);
+      userSavedCallBack();
     }
-    async.eachSeries(
-      seedData.users,
-      function(user, userSavedCallBack) {
-        User.create(user, function(err, createdUser) {
-          if (err) {
-            console.dir(err);
-          }
-          console.log("created user");
-          userSavedCallBack();
-        });
-      },
-      function(err) {
-        if (err) {
-          console.dir(err);
+  });  
+}
+
+function createComment(comment, commentSavedCallBack) {
+  var randomAuthor = randomEntry(users);
+  Comment.create(comment, function(err, createdComment) {
+    if (err) {
+      console.log(err);
+    } else {
+      createdComment.author.id = randomAuthor._id;
+      createdComment.author.username = randomAuthor.username;
+      createdComment.save();
+      console.log("comment created");
+      comments.push(createdComment);
+      commentSavedCallBack();
+    }
+  });
+}
+
+function createCat(cat, catSavedCallBack) {
+  var randomAuthor = randomEntry(users);
+  Cat.create(cat, function(err, createdCat) {
+    if (err) {
+      console.log(err);
+    } else {
+      createdCat.author.id = randomAuthor._id;
+      createdCat.author.username = randomAuthor.username;
+
+      // add n comments to the created cat
+      // and remove those comments from array
+      for (var i = 0; i < randomBetween(1, 4); i++) {
+        if (comments.length) {
+          var randomComment = randomEntry(comments);
+          comments.splice(comments.indexOf(randomComment), 1);
+          createdCat.comments.push(randomComment);
         }
-        console.log("seeding users completed");
-        callback(null, "SUCCESS - seed users");
       }
-    );
-  });
-}
 
-// seeding comments
-function seedComments(callback) {
-  Comment.remove({}, function(err) {
-    if (err) {
-      console.dir(err);
-    }
-    async.eachSeries(
-      seedData.comments,
-      function(comment, commentSavedCallBack) {
-        User.findOne({ username: comment.author }, function(err, user) {
-          if (err) {
-            console.dir(err);
-          }
-          var newComment = { text: comment.text };
-          Comment.create(newComment, function(err, createdComment) {
-            if (err) {
-              console.dir(err);
-            }
-            createdComment.author.id = user._id;
-            createdComment.author.username = user.username;
-            createdComment.save().then(function() {
-              catComments.push(createdComment._id);
-              console.log("created comment");
-              commentSavedCallBack();
-            });            
-          });
-        });
-      },
-      function(err) {
-        console.log("seeding comments completed");
-        callback(null, "SUCCESS - seed comments");
-      }
-    );
-  });
-}
-
-// seeding cats
-function seedCats(callback) {
-  Cat.remove({}, function(err) {
-    if (err) {
-      console.dir(err);
-    }
-    async.eachSeries(
-      seedData.cats,
-      function(cat, catSavedCallBack) {
-        User.findOne({ username: cat.author }, function(err, user) {
-          if (err) {
-            console.dir(err);
-          }
-          var newCat = { name: cat.name, image: cat.image, description: cat.description/*, author: author, comments: []*/ };
-          Cat.create(newCat, function(err, createdCat) {
-            if (err) {
-              console.dir(err);
-            }
-            createdCat.author.id = user._id;
-            createdCat.author.username = user.username;
-            createdCat.save().then(function() {
-              console.log("created cat");
-              catSavedCallBack();
-            });            
-          });
-        });
-      },
-      function(err) {
-        console.log("seeding cats completed");
-        callback(null, "SUCCESS - seed cats");
-      }
-    );
-  });
-}
-
-// seeding comments for cats
-function updateCatSeed(callback) {
-  var i = 0;
-  async.eachSeries(
-    seedData.comments,
-    function(comment, catCommentSavedCallBack) {
-      Comment.findById(catComments[i], function(err, foundComment) {
+      createdCat.save(function(err) {
         if (err) {
-          console.dir(err);
+          console.log(err);
+        } else {
+          console.log("cat created");
+          catSavedCallBack();
         }
-        Cat.findOne({ name: comment.cat }, function(err, cat) {
-          if (err) {
-            console.dir(err);
-          }         
-          cat.comments.push(foundComment);
-          cat.save().then(function() {
-            i++;
-            console.log("updated cat seed");
-            catCommentSavedCallBack();
-          });          
-        });            
-      });          
-    },
-    function(err) {
-      console.log("updating cat seed completed");
-      callback(null, "SUCCESS - update cat seed");
+      });   
     }
-  );
+  });
 }
 
 function seedDB() {
   async.series([
+    // remove users collection
     function(callback) {
-      seedUsers(callback);
+      removeCollection(callback, User);
     },
+    // remove comments collection
     function(callback) {
-      seedComments(callback);
+      removeCollection(callback, Comment);
     },
+    // remove cats collection
     function(callback) {
-      seedCats(callback);
+      removeCollection(callback, Cat);
     },
+    // seeding users
     function(callback) {
-      updateCatSeed(callback);
+      async.each(seedData.users, createUser, function(err) {
+        callback(null, "SUCCESS - seed users");
+      });
+    },
+    // seeding comments
+    function(callback) {
+      async.each(seedData.comments, createComment, function(err) {
+        callback(null, "SUCCESS - seed comments");
+      });
+    },
+    // seeding cats
+    function(callback) {
+      async.each(seedData.cats, createCat, function(err) {
+        callback(null, "SUCCESS - seed cats");
+      });
     }
   ],
   function(err, results) {
-    console.log("completed");
+    console.log("seeding completed");
 
     if (err) {
       console.log("Errors = ");
-      console.log(errors);
+      console.dir(err);
     } else {
       console.log("Results = ");
       console.log(results);
