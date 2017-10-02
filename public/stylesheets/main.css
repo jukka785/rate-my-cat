@@ -97,15 +97,19 @@
   color: rgba(0,0,0,.4);
 }
 
-#login {
+#login,
+#register {
   max-width: 450px;
 }
 
 #login a,
-#login .ui.red.header {
+#register a,
+#login .ui.red.header,
+#register .ui.red.header {
   color: rgb(244, 86, 83) !important;
 }
-#login .ui.large.red.button {
+#login .ui.large.red.button,
+#register .ui.large.red.button {
   background: rgb(244, 86, 83);
 }
 
@@ -113,9 +117,10 @@
   margin-bottom: 20px;
 }
 
-#message-container .ui.floating.message .header {
+#message-container .ui.message .header {
   font-weight: normal;
   font-size: 14px;
+  margin-right: 10px;
 }
 
 #pagination {

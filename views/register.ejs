@@ -1,7 +1,7 @@
 <% include ./partials/header %>
 
 <div class="ui center aligned grid">
-  <div id="login" class="column">
+  <div id="register" class="column">
     <h2 class="ui red header">Create an account</h2>
 
     <form class="ui large form" action="/register" method="post">
@@ -18,6 +18,7 @@
         </div>
       </div>
       <button class="ui fluid large red submit button" type="submit">Create Account</button>
+      <div class="ui error message"></div>
     </form>
   </div>
 </div>

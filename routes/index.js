@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var passport = require("passport");
+var assert = require("assert");
 var Cat = require("../models/cat");
 var Comment = require("../models/comment");
 var User = require("../models/user");
@@ -16,11 +17,13 @@ router.get("/", function(req, res) {
 // cats route
 router.get("/cats", function(req, res) {
   Cat.count(function(err, count) {
+    // pagination shittiä
     var currentPage = Number(req.query.page);
     var pageCount = Math.ceil(count / pageLimit);
     var currentPage = currentPage > 0 ? currentPage : 1;
     var currentPage = currentPage > pageCount ? pageCount : currentPage;
     var pagination = getPagination(currentPage, pageCount);
+    // find (and paginate) cats
     Cat.list({ page: currentPage, limit: pageLimit }, function(err, foundCats) {    
       var paginationParams = { pagination: pagination, currentPage: currentPage };
       if (err || !foundCats) {
@@ -50,7 +53,7 @@ router.get("/login", function(req, res) {
   res.locals.currentUser ? res.redirect("/cats") : res.render("login", { page: "login"});
 });
 
-// login logic
+// login post logic
 router.post("/login", passport.authenticate("local",
   {
     successRedirect: "/cats",
@@ -60,16 +63,20 @@ router.post("/login", passport.authenticate("local",
   }), function(req, res) {
 });
 
+// register form route
 router.get("/register", function(req, res) {
   res.locals.currentUser ? res.redirect("/cats") : res.render("register", { page: "register" });
 });
 
+// register post logic
 router.post("/register", function(req, res) {
+  if (res.locals.currentUser) {
+    res.redirect("/cats");
+  }
   var newUser = new User({ username: req.body.username });
   User.register(newUser, req.body.password, function(err, user) {
     if (err) {
-      console.log(err);
-      return res.render("login", {error: err.message});
+      return res.render("register", { error: err.message });
     }
     passport.authenticate("local")(req, res, function() {
       req.flash("success", "Successfully signed up! Nice to meet you " + req.body.username);
@@ -78,6 +85,7 @@ router.post("/register", function(req, res) {
   });
 });
 
+// logout route
 router.get("/logout", function(req, res) {
   if (res.locals.currentUser) {
     req.logout();
@@ -86,17 +94,6 @@ router.get("/logout", function(req, res) {
     req.flash("error", "You need to be logged in to log out!");
   }
   res.redirect("/cats");
-});
-
-// test db data route
-router.get("/test", function(req, res) {
-  Cat.find().populate("comments").exec(function(err, foundCats) {
-    if (err) {
-      console.dir(err);
-    } else {
-      res.render("test", { cats: foundCats });
-    }
-  });
 });
 
 router.get("*", function(req, res) {
