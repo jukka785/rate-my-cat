@@ -1,0 +1,39 @@
+<% include ./partials/header %>
+
+<div id="content" class="ui vertical segment">
+
+  <div class="ui three stackable link cards">
+    <% cats.forEach(function(cat) { %>
+      <a class="card" href="/cats/<%= cat.shortid %>">
+        <div class="image">
+          <img src="/cat.jpg">
+        </div>
+        <div class="content">
+          <div class="header">
+            <%= cat.name %>
+          </div>
+          <div class="meta">
+            <%= cat.age %> years old
+          </div>
+          <div class="description">
+            <%= cat.description %>
+          </div>
+        </div>
+        <div class="extra content">
+          <div class="ui heart rating" data-rating="0" data-max-rating="5"></div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+</div>
+
+<div id="pagination" class="ui center aligned vertical segment">
+  <div class="ui pagination menu">
+    <% paginationParams.pagination.forEach(function(p, i) { %>
+      <a class="item <%= typeof p !== 'undefined' && p === paginationParams.currentPage ? 'active' : '' %>"
+        href="/cats?page=<%= p %>"><%= p %></a>
+    <% }); %>
+  </div>
+</div>
+
+<% include ./partials/footer %>

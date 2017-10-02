@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var async = require("async");
+//var passport = require("passport");
 var Cat = require("../models/cat");
 var User = require("../models/user");
 var Comment = require("../models/comment");
@@ -10,7 +11,6 @@ var users = [];
 var comments = [];
 var cats = [];
 
-// assign mongoose promise library and connect to database
 mongoose.Promise = global.Promise;
 const databaseUri = process.env.MONGODB_URI;
 mongoose.connect(databaseUri, { useMongoClient: true })
@@ -35,16 +35,19 @@ function removeCollection(callback, Collection) {
   });
 }
 
+// register a new user with passport magic
 function createUser(user, userSavedCallBack) {
-  User.create(user, function(err, createdUser) {
+  var newUser = new User({ username: user.username });
+  User.register(newUser, user.password, function(err, createdUser) { 
     if (err) {
       console.log(err);
+      return next(err);
     } else {
-      console.log("user created");
+      console.log("user registered!");
       users.push(createdUser);
       userSavedCallBack();
     }
-  });  
+  });
 }
 
 function createComment(comment, commentSavedCallBack) {
@@ -74,7 +77,7 @@ function createCat(cat, catSavedCallBack) {
 
       // add n comments to the created cat
       // and remove those comments from array
-      for (var i = 0; i < randomBetween(1, 4); i++) {
+      for (var i = 0; i < randomBetween(0, 5); i++) {
         if (comments.length) {
           var randomComment = randomEntry(comments);
           comments.splice(comments.indexOf(randomComment), 1);
@@ -141,3 +144,5 @@ function seedDB() {
     process.exit(0);
   });
 }
+
+//module.exports = seedDB;

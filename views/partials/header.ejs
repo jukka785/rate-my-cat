@@ -5,6 +5,51 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rate my cat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css" integrity="sha256-/Z28yXtfBv/6/alw+yZuODgTbKZm86IKbPE/5kjO/xY=" crossorigin="anonymous">
   <link rel="stylesheet" href="/stylesheets/main.css">
 </head>
 <body>
+
+  <div id="header" class="ui center aligned vertical segment">
+    <div class="ui text container">
+      <h1 id="header" class="ui header">Rate my cat</h1>
+      <h2 id="mini-header">miu mau</h2>
+    </div>
+  </div>
+
+  <div id="menu" class="ui vertical segment">
+    <div class="ui container">
+      <div class="ui large borderless menu">
+          <a class="header item" href="/"><i class="paw icon"></i></a>
+          <a class="item <%= typeof page !== 'undefined' && page === 'cats' ? 'active' : '' %>" href="/cats">Cats</a>
+          <div class="right menu">
+            <% if(!currentUser) { %>
+              <a class="item" href="/login">Log In</a>
+              <a class="item" href="/register">Sign Up</a>
+            <% } else { %>
+              <span class="item"><%= currentUser.username %></span>
+              <a class="item" href="/logout">Log Out</a>
+            <% } %>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="message-container" class="ui center aligned container">
+   <% if(error && error.length > 0) { %>        
+     <div class="ui floating negative message">
+        <i class="close icon"></i>
+        <div class="header">
+          <%= error %>
+        </div>
+      </div>
+   <% } %>
+   <% if(success && success.length > 0) { %>
+     <div class="ui floating positive message">
+        <i class="close icon"></i>
+        <div class="header">
+          <%= success %>
+        </div>
+      </div>
+   <% } %>
+ </div>

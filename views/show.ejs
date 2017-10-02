@@ -1,0 +1,62 @@
+<% include ./partials/header %>
+
+<div id="content" class="ui vertical segment">
+
+  <div id="cat-content-grid" class="ui stackable two column grid">
+
+    <div class="eight wide column">
+
+      <div class="ui large image">
+        <img src="/cat2.jpg">
+      </div>
+
+      <div class="ui heart rating" data-rating="0" data-max-rating="5"></div>
+      <div class="ui red right floated tiny statistic">
+        <div class="value">4.5</div>
+        <div class="label">782 ratings</div>
+      </div>
+
+    </div>
+
+    <div class="eight wide column">
+
+      <div class="ui items">
+        <div class="item">
+          <div class="content">
+            <div id="cat-header" class="header"><%= cat.name %></div>
+            <div class="meta"><%= cat.age %> years old</div>
+
+            <div id="cat-description" class="description">
+              <p><%= cat.description %></p>
+            </div>
+            <div class="extra">
+              Created by <strong><%= cat.author.username %></strong><%= moment(cat.createdAt).fromNow() %>
+            </div>
+
+            <div id="comment-divider" class="ui horizontal divider">
+              <div class="extra"><%= cat.comments.length %> comments</div>
+            </div>
+
+            <div class="ui comments">
+              <% cat.comments.forEach(function(comment) { %>
+                <div class="comment">
+                  <div class="content">
+                    <span class="author"><%= comment.author.username %></span>
+                    <span class="metadata date"><%= moment(comment.createdAt).fromNow() %></span>
+                    <div class="text"><%= comment.text %></div>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<% include ./partials/footer %>

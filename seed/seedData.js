@@ -7,8 +7,8 @@ var data = {
 };
 
 var numUsers = 3;
-var numComments = 10;
-var numCats = 6;
+var numComments = 60;
+var numCats = 20;
 
 // generate random users
 for (var i = 0; i < numUsers; i++) {

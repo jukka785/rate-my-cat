@@ -1,0 +1,131 @@
+@media only screen and (max-width: 1200px) {
+  .ui.stackable.cards {
+    display: flex !important;
+  }
+
+  .ui.stackable.cards > .card {
+    width: calc( 50%  -  2em ) !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .ui.stackable.cards {
+    display: block !important;
+  }
+
+  .ui.stackable.cards > .card {
+    width: calc( 100%  -  2em ) !important;
+  }
+}
+
+#header, #menu, #menu .menu {
+  color: rgb(255, 255, 255);
+  background: rgb(244, 86, 83);
+  border: none;
+  box-shadow: none;
+}
+
+#header h1 {
+  font-size: 4em;
+  text-transform: uppercase;
+}
+
+#header h2 {
+  letter-spacing: 1em;
+  font-weight: 400;
+  margin-top: 0;
+}
+
+#menu {
+  margin-bottom: 1em;
+  padding-bottom: 0;
+}
+
+#menu .ui.menu .item {
+  color: rgb(255, 255, 255);
+  font-size: 1.2em;
+  border-radius: 0;
+}
+
+#menu .ui.menu .active.item {
+  color: rgb(244, 86, 83);
+  background: rgb(255, 255, 255);
+  font-weight: 400;
+}
+
+#menu .ui.menu a.item:hover, .ui.menu .active.item:hover {
+  color: rgb(244, 86, 83);
+  background: rgb(255, 255, 255);
+  font-weight: 400;
+}
+
+#menu .container {
+  max-width: 1000px !important;
+}
+
+#content {
+  max-width: 1000px;
+  margin: 0 auto;
+  border: none;
+}
+
+#comment-divider {
+  font-size: 0.8rem;
+}
+
+#cat-header {
+  font-size: 1.6em;
+}
+
+#cat-description {
+  font-size: 1.2em;
+}
+
+#cat-content-grid .ui.large.image {
+  width: 100%;
+}
+
+#cat-content-grid .ui.heart.rating {
+  padding-top: 10px;
+}
+
+#cat-content-grid .ui.red.statistic>.value {
+  color: rgb(244, 86, 83);
+}
+
+#cat-content-grid .ui.statistic>.label {
+  color: rgba(0,0,0,.4);
+}
+
+#login {
+  max-width: 450px;
+}
+
+#login a,
+#login .ui.red.header {
+  color: rgb(244, 86, 83) !important;
+}
+#login .ui.large.red.button {
+  background: rgb(244, 86, 83);
+}
+
+#message-container {
+  margin-bottom: 20px;
+}
+
+#message-container .ui.floating.message .header {
+  font-weight: normal;
+  font-size: 14px;
+}
+
+#pagination {
+  border: none;
+}
+
+.ui.heart.rating {
+  font-size: 2rem;
+}
+
+.ui.pagination.menu .item.active:hover {
+  color: rgba(0, 0, 0, .87);
+}

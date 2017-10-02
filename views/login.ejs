@@ -1,0 +1,26 @@
+<% include ./partials/header %>
+
+<div class="ui center aligned grid">
+  <div id="login" class="column">
+    <h2 class="ui red header">Log in to your account</h2>
+
+    <form class="ui large form" action="/login" method="post">
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="user icon"></i>
+          <input type="text" name="username" placeholder="Username">
+        </div>
+      </div>
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="lock icon"></i>
+          <input type="password" name="password" placeholder="Password">
+        </div>
+      </div>
+      <button class="ui fluid large red submit button" type="submit">Login</button>
+    </form>
+    <div class="ui message">New to us? <a href="#">Sign Up</a></div>
+  </div>
+</div>
+
+<% include ./partials/footer %>
