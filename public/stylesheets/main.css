@@ -132,6 +132,7 @@
 
 .ui.cards>.card .meta {
   margin-top: 4px;
+  font-size: 1.15em;
 }
 
 .ui.pagination.menu .item.active:hover {

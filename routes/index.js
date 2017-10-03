@@ -4,6 +4,7 @@ var passport = require("passport");
 var Cat = require("../models/cat");
 var Comment = require("../models/comment");
 var User = require("../models/user");
+var Rating = require("../models/rating");
 var middleware = require("../middleware");
 var { isLoggedIn } = middleware;
 
@@ -38,14 +39,91 @@ router.get("/cats", function(req, res) {
 
 // show cat route
 router.get("/cats/:id", function(req, res) {
-  Cat.findByShortId({ shortid: req.params.id }, function(err, foundCat) {
+  Cat.findByShortId({ shortid: req.params.id }, function(err, foundCat) {    
     if (err || !foundCat) {
-      //console.log(err);
+      console.log(err);
       req.flash("error", "Sorry, no cat with the given id found!");
       res.redirect("/cats");
     } else {
-      res.render("show", { cat: foundCat, page: "login" });
+      var rating = [];
+      if (req.user) {
+        rating = foundCat.ratings.filter(function(r) {
+          return r.author.id.equals(req.user._id);
+        });
+      }
+
+      res.render("show", { cat: foundCat, page: "login", rating: rating });
     }    
+  });
+});
+
+// rating - the horror show
+router.post("/cats/:id/rating", isLoggedIn, function(req, res) {
+  Cat.findOne({ shortid: req.params.id }).populate("ratings").exec(function(err, foundCat) {
+    if (err || !foundCat) {
+      console.log(err);
+      res.json({ error: "error" });
+    } else {
+      var rating = foundCat.ratings.filter(function(r) {
+        return r.author.id.equals(req.user._id);
+      });
+
+      if (!rating.length) {
+        Rating.create({ rating: req.query.newRating }, function(err, createdRating) {
+          if (err) {
+            console.log(err);
+            res.json({ error: "error" });
+          } else {
+            createdRating.author.id = req.user._id;
+            createdRating.author.username = req.user.username;
+            createdRating.save();
+            foundCat.ratings.push(createdRating);
+            foundCat.save();
+
+            var count = 0;
+            var avg = 0;
+            foundCat.ratings.forEach(function(r) {
+              count += r.rating;
+            });
+            avg = count / foundCat.ratings.length;
+
+            res.json({
+              success: "rating created successfully",
+              rating: req.query.newRating,
+              avg: avg.toFixed(1),
+              count: foundCat.ratings.length
+            });
+          }
+        });
+      } else {
+        Rating.findOneAndUpdate(
+          {_id: rating[0]._id },
+          { rating: req.query.newRating },
+          //{ new: true },
+          function(err, rating) {
+            if (err || !rating) {            
+              console.log(err);
+              res.json({ error: "error" });
+            } else {
+              var count = 0;
+              var avg = 0;
+              foundCat.ratings.forEach(function(r) {
+                count += r.rating;
+              });
+              count = count - rating.rating + Number(req.query.newRating);
+              avg = count / foundCat.ratings.length;
+
+              res.json({
+                success: "rating updated successfully",
+                rating: req.query.newRating,
+                avg: avg.toFixed(1),
+                count: foundCat.ratings.length
+              });
+            }
+          }
+        );
+      }
+    }
   });
 });
 
@@ -93,6 +171,7 @@ router.get("/logout", isLoggedIn, function(req, res) {
   res.redirect("/cats");
 });
 
+// 404
 router.get("*", function(req, res) {
   res.redirect("/cats");
 });

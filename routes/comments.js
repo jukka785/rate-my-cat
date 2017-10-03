@@ -11,7 +11,7 @@ router.post("/", isLoggedIn, function(req, res) {
       console.log(err);
       res.redirect("/cats/" + req.params.id);
     } else {
-      Comment.create(req.body.comment, function(err, createdComment) {
+      Comment.create({ text: req.body.text }, function(err, createdComment) {
         if (err) {
           console.log(err);
         } else {
@@ -30,8 +30,7 @@ router.post("/", isLoggedIn, function(req, res) {
 });
 
 router.put("/:commentId", isLoggedIn, checkUserComment, function(req, res) {
-  console.log(req.params.commentId);
-  Comment.findOneAndUpdate({ shortid: req.params.commentId }, req.body.comment, function(err, comment) {
+  Comment.findOneAndUpdate({ shortid: req.params.commentId }, { text: req.body.text }, function(err, comment) {
     if (err || !comment) {
       console.log(err);
       res.render("/cats/" + req.params.id);

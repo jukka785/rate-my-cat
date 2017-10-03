@@ -1,21 +1,38 @@
 $(document).ready(function() {
   $(".rating").rating();
 
+  $(".rating.rating-disabled").rating("disable");
+
   $(".ui.heart.rating").on("click", function(event) {
     event.preventDefault();
     //event.stopPropagation();
   });
 
+  
+  $(".ui.comments a").on("click", function(event) {
+    event.preventDefault();
+    $(this).siblings(".ui.edit.form").toggle();
+  });
+
+  $("#rating").on("click", function(event) {
+      var id = $(this).attr("cat-id");
+      var newRating = $(this).rating("get rating");
+      var that = $(this);
+      $.post("/cats/" + id + "/rating?newRating=" + newRating, function(data) {
+        if (data.success) {
+          that.rating("set rating", data.rating);
+          $(".ui.red.statistic .value").html(data.avg);
+          $(".ui.red.statistic .label").html(data.count + " ratings");
+        }
+      });
+  });
+
+  // client side form validation
   $("#login .ui.form").form({
     fields: {
       username: "empty",
       password: "empty"
     }
-  });
-
-  $(".ui.comments a").on("click", function(event) {
-    event.preventDefault();
-    $(this).siblings(".ui.edit.form").toggle();
   });
 
   $("#register .ui.form").form({

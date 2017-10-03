@@ -2,6 +2,10 @@ var Comment = require("../models/comment");
 
 module.exports = {
   isLoggedIn: function(req, res, next) {
+    if (req.xhr && !req.isAuthenticated()) {
+      return res.json({ error: "Not authorized" });
+    }
+
     if(req.isAuthenticated()) {
       return next();
     }
@@ -9,7 +13,7 @@ module.exports = {
     res.redirect("back");
   },
   isAdmin: function(req, res, next) {
-    if (req,user.isAdmin) {
+    if (req.user.isAdmin) {
       return next();
     }
     req.flash("error", "You need to be an admin to do that!");
@@ -21,7 +25,7 @@ module.exports = {
         console.log(err);
         req.flash("error", "Sorry, that comment does not exist!");
         res.redirect("back");
-      } else if (foundComment.author.id.equals(req.user._id) || req.user.isAdmin) {
+      } else if (req.user && foundComment.author.id.equals(req.user._id) || req.user && req.user.isAdmin) {
         req.comment = foundComment;
         next();
       } else {

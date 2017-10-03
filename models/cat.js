@@ -5,7 +5,7 @@ var CatSchema = new mongoose.Schema({
   name: String,
   age: Number,
   image: String,
-  description: String,
+  description: String,  
   shortid: {
     type: String,
     default: shortid.generate,
@@ -22,6 +22,12 @@ var CatSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment"
+    }
+  ],
+  ratings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Rating"
     }
   ]
 }, {
@@ -48,6 +54,7 @@ CatSchema.statics.findByShortId = function(query = {}, callback) {
   return this
     .findOne(query)
     .populate("comments")
+    .populate("ratings")
     .exec(function(err, foundCat) {
       callback(err, foundCat)
     });

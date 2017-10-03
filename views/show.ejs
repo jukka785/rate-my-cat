@@ -10,10 +10,21 @@
         <img src="/cat2.jpg">
       </div>
 
-      <div class="ui heart rating" data-rating="0" data-max-rating="5"></div>
+      <form action="/cats/<%= cat.shortid %>/rating" method="post">
+        <div id="rating" class="ui heart rating <%= !currentUser ? 'rating-disabled' : '' %>"
+          data-rating="<%= currentUser && rating[0] ? rating[0].rating : 0 %>" data-max-rating="5" cat-id="<%= cat.shortid %>"></div>
+      </form>
       <div class="ui red right floated tiny statistic">
-        <div class="value">4.5</div>
-        <div class="label">782 ratings</div>
+        <div class="value">
+          <%
+            var avg = 0;
+            cat.ratings.forEach(function(rating) {
+              avg += rating.rating;
+            });
+          %>
+          <%= (avg / cat.ratings.length).toFixed(1) %>
+        </div>
+        <div class="label"><%= cat.ratings.length %> ratings</div>
       </div>
 
     </div>
@@ -50,8 +61,9 @@
 
                     <form class="ui edit hide-edit form" method="POST">
                       <div class="field">
-                        <textarea name="comment[text]"><%= comment.text %></textarea>
+                        <textarea name="text"><%= comment.text %></textarea>
                       </div>
+                      <div class="ui error message"></div>
                       <button class="ui green tiny labeled submit icon button"
                         formaction="/cats/<%= cat.shortid %>/comments/<%= comment.shortid %>?_method=PUT">
                         <i class="icon edit"></i>Save Comment
@@ -69,7 +81,7 @@
 
             <form class="ui reply form" action="/cats/<%= cat.shortid %>/comments" method="post">
               <div class="field">
-                <textarea name="comment[text]"></textarea>
+                <textarea name="text"></textarea>
               </div>
               <div class="ui error message"></div>
               <button class="ui green labeled submit icon button">

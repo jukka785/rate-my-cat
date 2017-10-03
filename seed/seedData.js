@@ -3,12 +3,18 @@ var faker = require("faker");
 var data = {
   users: [],
   comments: [],
-  cats: []
+  cats: [],
+  ratings: []
 };
 
 var numUsers = 3;
 var numComments = 60;
 var numCats = 20;
+var numRatings = 100;
+
+function randomBetween(min, max) {
+  return ~~(Math.random() * (max-min)) + min;
+}
 
 // generate random users
 for (var i = 0; i < numUsers; i++) {
@@ -32,6 +38,13 @@ for (var i = 0; i < numCats; i++) {
     age: faker.random.number({ min: 1, max: 20}),
     image: faker.image.imageUrl(),
     description: faker.lorem.paragraph()
+  });
+}
+
+// generate random ratings
+for (var i = 0; i < numRatings; i++) {
+  data.ratings.push({
+    rating: randomBetween(2, 5)
   });
 }
 

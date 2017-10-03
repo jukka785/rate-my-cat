@@ -4,12 +4,14 @@ var async = require("async");
 var Cat = require("../models/cat");
 var User = require("../models/user");
 var Comment = require("../models/comment");
+var Rating = require("../models/rating");
 var seedData = require("./seedData");
 require("dotenv").load();
 
 var users = [];
 var comments = [];
 var cats = [];
+var ratings = [];
 
 mongoose.Promise = global.Promise;
 const databaseUri = process.env.MONGODB_URI;
@@ -66,6 +68,22 @@ function createComment(comment, commentSavedCallBack) {
   });
 }
 
+function createRating(rating, ratingSavedCallBack) {
+  var randomAuthor = randomEntry(users);
+  Rating.create(rating, function(err, createdRating) {
+    if (err) {
+      console.log(err);
+    } else {
+      createdRating.author.id = randomAuthor._id;
+      createdRating.author.username = randomAuthor.username;
+      createdRating.save();
+      console.log("rating created");
+      ratings.push(createdRating);
+      ratingSavedCallBack();
+    }
+  });
+}
+
 function createCat(cat, catSavedCallBack) {
   var randomAuthor = randomEntry(users);
   Cat.create(cat, function(err, createdCat) {
@@ -82,6 +100,15 @@ function createCat(cat, catSavedCallBack) {
           var randomComment = randomEntry(comments);
           comments.splice(comments.indexOf(randomComment), 1);
           createdCat.comments.push(randomComment);
+        }
+      }
+      // add n ratings to the created cat
+      // and remove those ratings from array
+      for (var i = 0; i < randomBetween(2, 10); i++) {
+        if (ratings.length) {
+          var randomRating = randomEntry(ratings);
+          ratings.splice(ratings.indexOf(randomRating), 1);
+          createdCat.ratings.push(randomRating);
         }
       }
 
@@ -123,12 +150,18 @@ function seedDB() {
         callback(null, "SUCCESS - seed comments");
       });
     },
+    // seed ratings
+    function(callback) {
+      async.each(seedData.ratings, createRating, function(err) {
+        callback(null, "SUCCESS - seed ratings");
+      });
+    },
     // seeding cats
     function(callback) {
       async.each(seedData.cats, createCat, function(err) {
         callback(null, "SUCCESS - seed cats");
       });
-    }
+    }    
   ],
   function(err, results) {
     console.log("seeding completed");
