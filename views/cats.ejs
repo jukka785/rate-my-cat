@@ -13,7 +13,7 @@
             <%= cat.name %>
           </div>
           <div class="meta">
-            <%= cat.age %> years old
+            <%= cat.age %> <%= cat.age === 1 ? "year old" : "years old" %>
           </div>
           <div class="description">
             <%= cat.description %>
@@ -21,6 +21,7 @@
         </div>
         <div class="extra content">
           <div class="ui heart rating" data-rating="0" data-max-rating="5"></div>
+          <span class="right floated meta"><%= cat.comments.length %> comments
         </div>
       </a>
     <% }) %>

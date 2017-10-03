@@ -13,6 +13,11 @@ $(document).ready(function() {
     }
   });
 
+  $(".ui.comments a").on("click", function(event) {
+    event.preventDefault();
+    $(this).siblings(".ui.edit.form").toggle();
+  });
+
   $("#register .ui.form").form({
     fields: {
       username: {
@@ -33,6 +38,12 @@ $(document).ready(function() {
           }
         ]
       }
+    }
+  });
+
+  $("#cat-content-grid .reply.form").form({
+    fields: {
+      text: "empty"
     }
   });
 });

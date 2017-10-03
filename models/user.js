@@ -5,6 +5,7 @@ var UserSchema = mongoose.Schema({
   username: { 
     type: String,    
     index: true,
+    unique: true,
     required: [true, "Please enter a username"],
     minlength: [3, "Your username must have at least {MINLENGTH} characters"]
   },

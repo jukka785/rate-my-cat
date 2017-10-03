@@ -24,7 +24,7 @@
         <div class="item">
           <div class="content">
             <div id="cat-header" class="header"><%= cat.name %></div>
-            <div class="meta"><%= cat.age %> years old</div>
+            <div class="meta"><%= cat.age %> <%= cat.age === 1 ? "year old" : "years old" %></div>
 
             <div id="cat-description" class="description">
               <p><%= cat.description %></p>
@@ -43,11 +43,39 @@
                   <div class="content">
                     <span class="author"><%= comment.author.username %></span>
                     <span class="metadata date"><%= moment(comment.createdAt).fromNow() %></span>
+                    <% if(currentUser && comment.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
+                      <a class="right floated meta" href=""><i class="edit icon"></i></a>
+                    <% } %>
                     <div class="text"><%= comment.text %></div>
+
+                    <form class="ui edit hide-edit form" method="POST">
+                      <div class="field">
+                        <textarea name="comment[text]"><%= comment.text %></textarea>
+                      </div>
+                      <button class="ui green tiny labeled submit icon button"
+                        formaction="/cats/<%= cat.shortid %>/comments/<%= comment.shortid %>?_method=PUT">
+                        <i class="icon edit"></i>Save Comment
+                      </button>
+                      <button class="ui tiny labeled submit icon button"
+                        formaction="/cats/<%= cat.shortid %>/comments/<%= comment.shortid %>?_method=DELETE">
+                        <i class="icon delete"></i>Delete Comment
+                      </button>
+                    </form>
+
                   </div>
                 </div>
               <% }) %>
             </div>
+
+            <form class="ui reply form" action="/cats/<%= cat.shortid %>/comments" method="post">
+              <div class="field">
+                <textarea name="comment[text]"></textarea>
+              </div>
+              <div class="ui error message"></div>
+              <button class="ui green labeled submit icon button">
+                <i class="icon edit"></i>Add New Comment
+              </button>
+            </form>
 
           </div>
         </div>

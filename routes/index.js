@@ -1,10 +1,11 @@
 var express = require("express");
 var router = express.Router();
 var passport = require("passport");
-var assert = require("assert");
 var Cat = require("../models/cat");
 var Comment = require("../models/comment");
 var User = require("../models/user");
+var middleware = require("../middleware");
+var { isLoggedIn } = middleware;
 
 // n items per page (for pagination)
 var pageLimit = 6;
@@ -40,7 +41,7 @@ router.get("/cats/:id", function(req, res) {
   Cat.findByShortId({ shortid: req.params.id }, function(err, foundCat) {
     if (err || !foundCat) {
       //console.log(err);
-      req.flash("error", "Sorry, that cat does not exist!");
+      req.flash("error", "Sorry, no cat with the given id found!");
       res.redirect("/cats");
     } else {
       res.render("show", { cat: foundCat, page: "login" });
@@ -86,13 +87,9 @@ router.post("/register", function(req, res) {
 });
 
 // logout route
-router.get("/logout", function(req, res) {
-  if (res.locals.currentUser) {
-    req.logout();
-    req.flash("success", "See you later!");
-  } else {
-    req.flash("error", "You need to be logged in to log out!");
-  }
+router.get("/logout", isLoggedIn, function(req, res) {
+  req.logout();
+  req.flash("success", "See you later!");
   res.redirect("/cats");
 });
 

@@ -11,6 +11,7 @@ var app = express();
 
 var User = require("./models/user");
 var indexRoutes = require("./routes/index");
+var commentRoutes = require("./routes/comments");
 
 // configure dotenv
 require("dotenv").load();
@@ -59,6 +60,7 @@ app.use(function(req, res, next) {
 
 // register routes
 app.use("/", indexRoutes);
+app.use("/cats/:id/comments", commentRoutes);
 
 app.listen(process.env.PORT/*, process.env.IP*/, function() {
   console.log("Server has started on port " + process.env.PORT);
